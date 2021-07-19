@@ -13,9 +13,17 @@ public class Neuron {
 		for (int i = 0; i < prevNeurons.length; i++){
 			sum += (prevNeurons[i].getOutput() * prevWts[i][target]);	
 		}
-		output = (float) (1.0 / (1.0 + Math.exp(-sum)));
+		output = (float) (1.0 / (1.0 + Math.exp(-sum))); //sigmoid
+		
 	}
 
+	float sigmoid(float x) {
+		return (float) (1.0 / (1.0 + Math.exp(-x)));	
+	}
+
+	float tanh(float x) {
+		return (float) Math.tanh(x);
+	}
 }
 
 class Input extends Neuron {
@@ -40,6 +48,6 @@ class Bias extends Neuron {
 	}
 
 	public void process(float[][] thing, Neuron[] thing1, int thing3) {
-		System.out.print("I'm biased!");
+		return;
 	}
 }
