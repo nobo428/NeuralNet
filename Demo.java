@@ -1,6 +1,6 @@
 public class Demo {
 	public static void main(String[] args){
-		Net daNet = new Net(2, 2, 4, 1);    //for test
+		Net daNet = new Net(2, 1, 2, 1);    //for test
                 //Net daNet = new Net (2,2,4,2);
 		daNet.populate();
 
@@ -13,7 +13,7 @@ public class Demo {
 		float[] in3 = {0,0};
                 float[] out3 = {0};
 
-		for (int i = 0; i < 100; i++){
+		for (int i = 0; i < 1000; i++){
 		daNet.train(in, out);
 		daNet.train(in1, out1);
 		daNet.train(in2, out2);

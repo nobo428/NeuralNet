@@ -2,7 +2,7 @@ import java.util.Random;
 
 public class Net {
 	int numIn, numHid, numDepth, numOut, maxDepth;
-	float learningRate = (float) 0.75;
+	float learningRate = (float) 0.1;
 	Neuron network[][];
 	float weights[][][];
 
@@ -63,12 +63,19 @@ public class Net {
 		for (int a = 0; a < weights.length; a++){
 			for (int b = 0; b < weights[a].length; b++){
 				for (int c = 0; c < weights[a][b].length; c++){
-					weights[a][b][c] = daRand.nextFloat();
+					int randInt = daRand.nextInt(2);
+					float randFloat = daRand.nextFloat() * (float) 0.75;
+					if (randInt > 0){
+						weights[a][b][c] = randFloat;
+					} else {
+						weights[a][b][c] = -randFloat;
+					}
 				}
 			}
 		}
 	}
 	public void activate(){
+		//process hidden & outputs
 		for (int d = 1; d < network.length; d++){
 			for (int e = 0; e < network[d].length; e++) {
 				network[d][e].process(weights[d - 1], network[d - 1], e);
@@ -82,14 +89,14 @@ public class Net {
 		} else {
 			for (int l = 0; l < numIn; l++) {
 				network[0][l].setInput(inputs[l]);
-				//System.out.println("Input " + (l+1) + " : " + network[0][l].getOutput());
+				System.out.println("Input " + (l+1) + " : " + network[0][l].getOutput());
 			}
 			
 			activate();
 			
 			for (int i = 1; i <= numOut; i++) {
-				//System.out.println("Result " + i + ": " + network[numHid+1][i-1].getOutput());
-				//System.out.println("Expected Result: " + expected[i-1]);
+				System.out.println("Result " + i + ": " + network[numHid+1][i-1].getOutput());
+				System.out.println("Expected Result: " + expected[i-1]);
 			}
 			
 			backProp(expected);
@@ -106,8 +113,11 @@ public class Net {
 		if (trainingData.length == loss[loss.length-1].length)
 		{
 			for (int t = 0; t < trainingData.length; t++) {
-				loss[loss.length-1][t] = network[numHid+1][t].getOutput() - trainingData[t];
-				System.out.println("Loss " + (t+1) + ": " + loss[loss.length-1][t]);
+				float output = network[numHid+1][t].getOutput();
+				float error = trainingData[t] - output;
+				float gradient = output * (1 - output) * error;
+				loss[loss.length-1][t] = gradient;
+				System.out.println("Loss " + (t+1) + ": " + loss[loss.length-1][t] + "\n");
 			}
 		} else {
 			System.out.println("Training data and loss array sizes do not match! something is wrong...");
@@ -118,9 +128,11 @@ public class Net {
 			for (int n = loss[d].length - 1; n >= 0; n--) {
 				float sumError = 0;
 				for (int w = loss[d+1].length - 1; w >= 0; w--) {
-					sumError += loss [d+1][w] * weights[d+1][n][w];
+					sumError += loss[d+1][w] * weights[d+1][n][w];
 				}
-				loss[d][n] = sumError;
+				float output = network[d+1][n].getOutput();
+				float gradient = output * (1 - output) * sumError;
+				loss[d][n] = gradient;
 				
 				//System.out.println("Loss of neuron " + (d+1) + " " + n + " : " + loss[d][n]);
 			}
@@ -128,10 +140,10 @@ public class Net {
 
 		//update weights
 		for (int s = 0; s < weights.length; s++){
-			for (int c = 0; c <  weights[s].length - 1; c++) {
+			for (int c = 0; c <  weights[s].length; c++) {
 				for (int p = 0; p < weights[s][c].length; p++) {
 					//System.out.println(s+" "+c+" "+p+" before: " + weights[s][c][p]);
-					weights[s][c][p] = weights[s][c][p] - (learningRate * network[s][c].getOutput() * loss[s][p]);
+					weights[s][c][p] = weights[s][c][p] + learningRate * network[s][c].getOutput() * loss[s][p];
 					//System.out.println(s + " " + c +" "+ p + " after: " + weights[s][c][p]);
 				}
 			}
