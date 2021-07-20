@@ -17,6 +17,21 @@ public class Net {
 		numDepth = depth;
 		numOut = outputs;
 
+		init();
+	}
+
+	public Net(int inputs, int hidden, int depth, int outputs, float learningRate) {
+		//initialize net size variables
+		numIn = inputs;
+		numHid = hidden;
+		numDepth = depth;
+		numOut = outputs;
+		this.learningRate = learningRate;
+
+		init();
+	}
+
+	 void init() {
 		//initialize network array
 		network = new Neuron[numHid + 2][];
 		network[0] = new Neuron[numIn + 1];
