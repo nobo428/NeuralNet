@@ -64,11 +64,25 @@ public class Net {
 			for (int b = 0; b < weights[a].length; b++){
 				for (int c = 0; c < weights[a][b].length; c++){
 					int randInt = daRand.nextInt(2);
-					float randFloat = daRand.nextFloat() * (float) 0.75;
-					if (randInt > 0){
-						weights[a][b][c] = randFloat;
+					float randFloat = daRand.nextFloat();
+					float std;
+
+					if (a == weights.length-1) {
+					// initial weights for output
+						double interim = 2/((double) weights[a].length);
+						
+						//System.out.println(interim + " interim");
+						
+						std = (float) Math.sqrt(interim);
 					} else {
-						weights[a][b][c] = -randFloat;
+					// initial weights for hidden
+						std = 1/((float) Math.sqrt(weights[a].length));
+					}
+
+					if (randInt > 0){
+						weights[a][b][c] = randFloat * std;
+					} else {
+						weights[a][b][c] = randFloat * (-std);
 					}
 				}
 			}
@@ -82,24 +96,52 @@ public class Net {
 			}
 		}
 	}
-	public void train(float[] inputs, float[] expected) {
+
+	public void test(float[] inputs) {
+		if (inputs.length != numIn) {
+                	System.out.println("Make sure inputs match network");
+                	return;
+  		} else {
+                        for (int l = 0; l < numIn; l++) {
+                        	network[0][l].setInput(inputs[l]);
+                                System.out.println("Input " + (l+1) + " : " + network[0][l].getOutput());
+                        }
+                         
+                        activate();
+                         
+                        for (int i = 1; i <= numOut; i++) {
+                        	System.out.println("Result " + i + ": " + network[numHid+1][i-1].getOutput() + "\n");
+			}
+		}
+	}
+
+	public float train(float[] inputs, float[] expected) {
+		float sumError = 0;
+		float avgError;
+
 		if (inputs.length != numIn || expected.length != numOut) {
 			System.out.println("Make sure inputs/outputs match network");
-			return;
+			return 1;
 		} else {
 			for (int l = 0; l < numIn; l++) {
 				network[0][l].setInput(inputs[l]);
-				System.out.println("Input " + (l+1) + " : " + network[0][l].getOutput());
+				//System.out.println("Input " + (l+1) + " : " + network[0][l].getOutput());
 			}
 			
 			activate();
 			
-			for (int i = 1; i <= numOut; i++) {
-				System.out.println("Result " + i + ": " + network[numHid+1][i-1].getOutput());
-				System.out.println("Expected Result: " + expected[i-1]);
+			for (int i = 0; i < numOut; i++) {
+				//System.out.println("Result " + (i+1) + ": " + network[numHid+1][i].getOutput());
+				//System.out.println("Expected Result: " + expected[i]);
+				sumError += Math.abs(expected[i] - network[numHid + 1][i].getOutput());
+			
 			}
 			
+			avgError = sumError / numOut;
+			//System.out.println(avgError);
 			backProp(expected);
+
+			return avgError;
 		}
 	}
 
@@ -117,7 +159,7 @@ public class Net {
 				float error = trainingData[t] - output;
 				float gradient = output * (1 - output) * error;
 				loss[loss.length-1][t] = gradient;
-				System.out.println("Loss " + (t+1) + ": " + loss[loss.length-1][t] + "\n");
+				//System.out.println("Error " + (t+1) + ": " + error + "\n");
 			}
 		} else {
 			System.out.println("Training data and loss array sizes do not match! something is wrong...");

@@ -64,7 +64,7 @@ class Bias extends Neuron {
 	}
 
 	public void process(float[][] thing, Neuron[] thing1, int thing3) {
-		System.out.println("Bias don't calculate!");
+		//System.out.println("Bias don't calculate!");
 		return;
 	}
 }
