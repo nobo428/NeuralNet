@@ -1,6 +1,6 @@
 import java.util.Scanner;
 
-public class Demo {
+public class XOrNet {
 	public static void main(String[] args){
 		//init network size variables
 		final int OUTPUTS = 1;

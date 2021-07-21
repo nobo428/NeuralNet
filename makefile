@@ -10,5 +10,5 @@ clean:
 compile:
 	javac $(JFLAGS) *.java
 
-demo:
-	java Demo
+start:
+	java XOrNet
